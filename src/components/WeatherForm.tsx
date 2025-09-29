@@ -3,7 +3,7 @@ import { LocationInput } from '../types/weather';
 import LocationMap from './LocationMap';
 
 interface WeatherFormProps {
-  onSubmit: (location: LocationInput, startDate: string, endDate?: string) => Promise<void>;
+  onSubmit: (location: LocationInput, startDate: string, endDate?: string, datasetMode?: 'IMD' | 'Global' | 'Combined') => Promise<void>;
   isLoading: boolean;
 }
 
@@ -15,6 +15,7 @@ const WeatherForm: React.FC<WeatherFormProps> = ({ onSubmit, isLoading }) => {
   } | null>(null);
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
+  const [datasetMode, setDatasetMode] = React.useState<'IMD' | 'Global' | 'Combined'>('Combined');
 
   const handleLocationSelect = (lat: number, lng: number, address?: string) => {
     setSelectedLocation({ lat, lng, address });
@@ -37,7 +38,7 @@ const WeatherForm: React.FC<WeatherFormProps> = ({ onSubmit, isLoading }) => {
       latitude: selectedLocation.lat, 
       longitude: selectedLocation.lng, 
       city_name: selectedLocation.address 
-    }, startDate, endDate || undefined);
+    }, startDate, endDate || undefined, datasetMode);
   };
 
   return (
@@ -77,6 +78,28 @@ const WeatherForm: React.FC<WeatherFormProps> = ({ onSubmit, isLoading }) => {
           </div>
         </div>
 
+        {/* Dataset Source */}
+        <div>
+          <label className="block text-white font-medium mb-2">Dataset Source</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(['IMD', 'Global', 'Combined'] as const).map(mode => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setDatasetMode(mode)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  datasetMode === mode
+                    ? 'bg-white text-nasa-blue border-white'
+                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+          <p className="text-white/60 text-xs mt-2">IMD focuses on India; Global uses NASA/NOAA; Combined merges when available.</p>
+        </div>
+
         {/* Submit Button */}
         <button
           type="submit"
@@ -99,7 +122,7 @@ const WeatherForm: React.FC<WeatherFormProps> = ({ onSubmit, isLoading }) => {
         <h3 className="text-white font-medium mb-2">What PastCast Analyzes:</h3>
         <ul className="text-white/80 text-sm space-y-1">
           <li>• Rain probability (precipitation {'>'} 1mm/day)</li>
-          <li>• Extreme heat probability (temperature {'>'} 35°C)</li>
+          <li>• Extreme heat probability (temperature {'>'} 40°C for India, 35°C elsewhere)</li>
           <li>• High wind probability (wind speed {'>'} 20 km/h)</li>
           <li>• Cloudy conditions (cloud cover {'>'} 70%)</li>
           <li>• Overall good weather probability</li>

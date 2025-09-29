@@ -44,7 +44,7 @@ const AIChat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/ai/chat', {
+      const response = await fetch('/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,20 +59,25 @@ const AIChat: React.FC = () => {
       }
 
       const data = await response.json();
-      
+
+      const normalized = typeof data.response === 'string' && data.response.trim().length > 0
+        ? data.response
+        : "I couldn't interpret that. Try asking about rain (%) or temperature (°C) for a place and date.";
+
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: data.response,
+        content: normalized,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
+      console.error('AI chat error', error);
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "I'm sorry, I'm having trouble connecting to the weather analysis service. Please try again later.",
+        content: "I'm sorry, I ran into an issue. For weather queries, please include a place, date, and metric (e.g., rain %, temp °C).",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);

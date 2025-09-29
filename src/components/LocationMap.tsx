@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -78,6 +78,18 @@ const LocationMap: React.FC<LocationMapProps> = ({
     onLocationSelect(lat, lng, address);
   };
 
+  const RecenterOnSelect: React.FC = () => {
+    const map = useMap();
+    React.useEffect(() => {
+      if (selectedLocation) {
+        map.setView([selectedLocation.lat, selectedLocation.lng], Math.max(map.getZoom(), 8), {
+          animate: true
+        });
+      }
+    }, [map, selectedLocation]);
+    return null;
+  };
+
   return (
     <div className="w-full">
       <div className="mb-4">
@@ -147,10 +159,9 @@ const LocationMap: React.FC<LocationMapProps> = ({
         style={{ height }}
       >
         <MapContainer
-          center={[initialLat, initialLng]}
-          zoom={selectedLocation ? 10 : 2}
+          center={[selectedLocation?.lat ?? initialLat, selectedLocation?.lng ?? initialLng]}
+          zoom={selectedLocation ? 10 : 3}
           style={{ height: '100%', width: '100%' }}
-          key={selectedLocation ? `${selectedLocation.lat}-${selectedLocation.lng}` : 'default'}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -163,7 +174,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
                 <div className="text-center">
                   <p className="font-medium">{address || 'Selected Location'}</p>
                   <p className="text-sm text-gray-600">
-                    {selectedLocation.lat.toFixed(4)}°N, {selectedLocation.lng.toFixed(4)}°E
+                    {selectedLocation.lat.toFixed(4)}°, {selectedLocation.lng.toFixed(4)}°
                   </p>
                 </div>
               </Popup>
@@ -171,6 +182,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
           )}
           
           <MapEvents onLocationSelect={handleLocationSelect} />
+          <RecenterOnSelect />
         </MapContainer>
       </div>
 

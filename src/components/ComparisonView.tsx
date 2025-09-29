@@ -3,7 +3,7 @@ import { LocationInput } from '../types/weather';
 import LocationMap from './LocationMap';
 
 interface ComparisonViewProps {
-  onSubmit: (locations: LocationInput[], startDate: string, endDate?: string) => void;
+  onSubmit: (locations: LocationInput[], startDate: string, endDate?: string, datasetMode?: 'IMD' | 'Global' | 'Combined') => void;
   isLoading: boolean;
 }
 
@@ -15,6 +15,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ onSubmit, isLoading }) 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [useDateRange, setUseDateRange] = useState(false);
+  const [datasetMode, setDatasetMode] = useState<'IMD' | 'Global' | 'Combined'>('Combined');
 
   const addLocation = () => {
     const newId = (locations.length + 1).toString();
@@ -58,7 +59,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ onSubmit, isLoading }) 
 
     // Remove id field before submitting
     const locationsToSubmit = validLocations.map(({ id, ...loc }) => loc);
-    onSubmit(locationsToSubmit, startDate, useDateRange ? endDate : undefined);
+    onSubmit(locationsToSubmit, startDate, useDateRange ? endDate : undefined, datasetMode);
   };
 
   return (
@@ -143,6 +144,28 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ onSubmit, isLoading }) 
             />
           </div>
         )}
+
+        {/* Dataset Source */}
+        <div>
+          <label className="block text-white font-medium mb-2">Dataset Source</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(['IMD', 'Global', 'Combined'] as const).map(mode => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setDatasetMode(mode)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  datasetMode === mode
+                    ? 'bg-white text-nasa-blue border-white'
+                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+          <p className="text-white/60 text-xs mt-2">IMD focuses on India; Global uses NASA/NOAA; Combined merges when available.</p>
+        </div>
 
         {/* Submit Button */}
         <button

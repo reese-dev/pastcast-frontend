@@ -5,7 +5,7 @@ export interface LocationInput {
 }
 
 export interface WeatherCondition {
-  probability: number;
+  probability: number | null;
   label: string;
   threshold: string;
   description: string;
@@ -40,6 +40,7 @@ export interface WeatherData {
   ai_insights?: string;
   data_sources: string[];
   analysis_period: string;
+  dataset_mode?: 'IMD' | 'Global' | 'Combined';
 }
 
 export interface ComparisonResult {

@@ -13,18 +13,19 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'single' | 'compare' | 'chat'>('single');
 
-  const handleWeatherQuery = async (location: LocationInput, startDate: string, endDate?: string) => {
+  const handleWeatherQuery = async (location: LocationInput, startDate: string, endDate?: string, datasetMode?: 'IMD' | 'Global' | 'Combined') => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:8000/weather/probability', {
+      const response = await fetch('/weather/probability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           location,
           date_range: { start_date: startDate, end_date: endDate || startDate },
-          include_ai_insights: true
+          include_ai_insights: true,
+          dataset_mode: datasetMode || 'Combined'
         }),
       });
 
@@ -33,23 +34,25 @@ function App() {
       const data: WeatherData = await response.json();
       setWeatherData(data);
     } catch (err) {
+      console.error('Weather probability fetch error', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleComparisonQuery = async (locations: LocationInput[], startDate: string, endDate?: string) => {
+  const handleComparisonQuery = async (locations: LocationInput[], startDate: string, endDate?: string, datasetMode?: 'IMD' | 'Global' | 'Combined') => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:8000/weather/compare', {
+      const response = await fetch('/weather/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           locations,
-          date_range: { start_date: startDate, end_date: endDate || startDate }
+          date_range: { start_date: startDate, end_date: endDate || startDate },
+          dataset_mode: datasetMode || 'Combined'
         }),
       });
 
@@ -58,6 +61,7 @@ function App() {
       const data = await response.json();
       setComparisonData(data.comparison_results);
     } catch (err) {
+      console.error('Weather compare fetch error', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
