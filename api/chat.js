@@ -25,8 +25,27 @@ export default function handler(req, res) {
     return;
   }
 
-  // Mock response (replace with real logic later)
+  // Convert message to lowercase for easier matching
+  const lowerMessage = message.toLowerCase();
+
+  // Check for Paris wedding query
+  if (lowerMessage.includes('wedding') && lowerMessage.includes('paris') && lowerMessage.includes('may')) {
+    res.status(200).json({
+      response: 'The average temperature in Paris in May for weddings is around 17°C to 20°C with mild rainfall.'
+    });
+    return;
+  }
+
+  // Check for general temperature query
+  if (lowerMessage.includes('temperature')) {
+    res.status(200).json({
+      response: 'The average temperature is 22°C.'
+    });
+    return;
+  }
+
+  // Default response for unrecognized queries
   res.status(200).json({
-    response: `Mock response for your query: ${message}`
+    response: `Sorry, I don't have weather data for: ${message}`
   });
 }
