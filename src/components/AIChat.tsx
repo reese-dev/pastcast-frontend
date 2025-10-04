@@ -44,7 +44,7 @@ const AIChat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/ai/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +59,6 @@ const AIChat: React.FC = () => {
       }
 
       const data = await response.json();
-
       const normalized = typeof data.response === 'string' && data.response.trim().length > 0
         ? data.response
         : "I couldn't interpret that. Try asking about rain (%) or temperature (°C) for a place and date.";
@@ -86,6 +85,7 @@ const AIChat: React.FC = () => {
           : "I'm sorry, I encountered an error processing your request. Please try asking about weather conditions with a specific location, date, and metric (e.g., rain %, temperature °C, wind speed, etc.).",
         timestamp: new Date()
       };
+
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -139,8 +139,8 @@ const AIChat: React.FC = () => {
             <div className="bg-white/20 rounded-lg p-3">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                 <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
               </div>
             </div>
           </div>
@@ -168,7 +168,7 @@ const AIChat: React.FC = () => {
       )}
 
       {/* Input Form */}
-      <form className="p-4 border-t border-white/20" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="p-4 border-t border-white/20">
         <div className="flex space-x-2">
           <input
             type="text"
