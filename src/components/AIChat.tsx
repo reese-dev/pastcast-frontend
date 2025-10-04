@@ -74,10 +74,16 @@ const AIChat: React.FC = () => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('AI chat error', error);
+      
+      // Check if the error is a connection error (backend not running)
+      const isConnectionError = error instanceof TypeError && error.message.includes('fetch');
+      
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "I'm sorry, I ran into an issue. For weather queries, please include a place, date, and metric (e.g., rain %, temp °C).",
+        content: isConnectionError 
+          ? "I'm unable to connect to the backend server. Please ensure the mock server is running by executing 'npm run mock:server' in a separate terminal. For weather queries, include a location, date, and metric (e.g., 'rain probability in Paris on May 15' or 'temperature in Tokyo in April')."
+          : "I'm sorry, I encountered an error processing your request. Please try asking about weather conditions with a specific location, date, and metric (e.g., rain %, temperature °C, wind speed, etc.).",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -133,8 +139,8 @@ const AIChat: React.FC = () => {
             <div className="bg-white/20 rounded-lg p-3">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                 <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
               </div>
             </div>
           </div>
@@ -162,7 +168,7 @@ const AIChat: React.FC = () => {
       )}
 
       {/* Input Form */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-white/20">
+      <form className="p-4 border-t border-white/20" onSubmit={handleSubmit}>
         <div className="flex space-x-2">
           <input
             type="text"
