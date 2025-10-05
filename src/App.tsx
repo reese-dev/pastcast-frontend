@@ -18,7 +18,7 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch('/weather/probability', {
+      const response = await fetch('/api/weather/probability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,7 +46,7 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch('/weather/compare', {
+      const response = await fetch('/api/weather/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -72,7 +72,6 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-nasa-blue to-weather-blue">
       <Header />
       <main className="container mx-auto px-4 py-8">
-
         {/* Tab Navigation */}
         <div className="mb-8">
           <nav className="flex space-x-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
